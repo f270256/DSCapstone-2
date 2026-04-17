@@ -1,0 +1,77 @@
+Model Metrics File
+==================
+
+Project: Kickstarter Campaign Success Prediction
+Dataset rows used after cleaning: 372,066
+Train/test split: 80/20 stratified
+Training rows: 297,649
+Test rows: 74,413
+Target: state_binary (1 = successful, 0 = unsuccessful)
+
+Final Feature Set
+-----------------
+Numeric features (5): usd_goal_real, duration, launch_year, launch_month, launch_weekday
+Categorical features one-hot encoded (drop_first=True): category, main_category, currency, country
+Total model features after encoding: 211
+
+Columns intentionally excluded to avoid target leakage or low business value:
+- ID, name, state
+- pledged, usd_pledged_real, backers
+- goal (dropped in favor of usd_goal_real)
+- launched and deadline after deriving calendar fields
+
+Preprocessing
+-------------
+- Missing values dropped after target creation
+- One-hot encoding applied to categorical variables
+- StandardScaler applied to numeric features only
+
+Model Comparison
+----------------
+                  model  accuracy  precision   recall       f1           tn          fp           fn           tp  selected
+    Logistic Regression  0.689449   0.607078 0.387673 0.473179 40926.000000 6717.000000 16392.000000 10378.000000     False
+   Decision Tree (Gini)  0.686775   0.601847 0.382107 0.467440 40876.000000 6767.000000 16541.000000 10229.000000     False
+Decision Tree (Entropy)  0.686399   0.606593 0.364998 0.455758 41306.000000 6337.000000 16999.000000  9771.000000     False
+  Random Forest (Tuned)  0.695658   0.601228 0.457378 0.519529 39522.000000 8121.000000 14526.000000 12244.000000      True
+
+Baseline
+--------
+Dummy classifier strategy: most_frequent
+Baseline accuracy on test set: 0.640251
+Baseline F1 on test set: 0.000000
+
+Selected Model
+--------------
+Model: Random Forest (Tuned)
+Selection rationale: best holdout F1 score while maintaining the highest overall accuracy among tested models.
+
+Random Forest Hyperparameters
+-----------------------------
+- max_depth: None
+- min_samples_leaf: 1
+- min_samples_split: 5
+- n_estimators: 200
+- random_state: 42
+- scoring used for GridSearchCV: f1
+- cross-validation folds: 3
+
+Selected Model Performance
+--------------------------
+- accuracy: 0.695658
+- precision: 0.601228
+- recall: 0.457378
+- f1: 0.519529
+- confusion_matrix: [[39522, 8121], [14526, 12244]]
+
+Top Feature Importances (Random Forest)
+--------------------------------------
+- usd_goal_real: 0.275298
+- duration: 0.153314
+- launch_month: 0.144454
+- launch_weekday: 0.098137
+- launch_year: 0.083641
+- category_Tabletop Games: 0.009253
+- main_category_Music: 0.008656
+- main_category_Technology: 0.006228
+- main_category_Theater: 0.005827
+- category_Shorts: 0.005420
